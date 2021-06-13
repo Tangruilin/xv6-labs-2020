@@ -68,7 +68,7 @@ void find(char* path, char *name)
             
             // don't find . and ..
             if (!strcmp(de.name, ".") || !strcmp(de.name, "..")) continue;
-            
+            //printf("%s", buf);
             // recursive call find
             find(buf, name);
         }
