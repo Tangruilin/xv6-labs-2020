@@ -37,7 +37,7 @@ main(int argc, char const *argv[])
             exit(1);
         }
         // 父进程，将数据循环地发送到子进程，发送完后关闭描述符然后退出
-        if (pid == 0) {
+        if (pid > 0) {
             close(fd[READ_FD]);
             // 将数组中的数据逐一发送过去，一共要发送的数据数目为index个
             // 这里必须使用 < 而不能使用 <= ， 否则因为index每次都是多放了一个的
