@@ -1,4 +1,5 @@
 // 实现一个素数筛, 求35以内的素数
+// 素数筛有一些bug，不能通过测试，先把这个实验做完，然后慢慢问别人
 #include "kernel/types.h"
 #include "kernel/stat.h"
 #include "user/user.h"
