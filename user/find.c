@@ -16,7 +16,8 @@ fmtname(char *path) {
     if (strlen(p) >= DIRSIZ)
         return p;
     memmove(buf, p, strlen(p));
-    memset(buf+strlen(p), ' ', DIRSIZ-strlen(p));
+    // 这里要把后面用转义0替换，示例代码挖坑了，使用空串进行了替换
+    memset(buf+strlen(p), '\0', DIRSIZ-strlen(p));
     return buf;
 }
 
@@ -73,13 +74,13 @@ find(char *path, char* file) {
             switch (st.type)
             {
             case T_FILE:
-                    printf("%s\n", fmtname(buf));
-                    printf("%d\n", strcmp(file, fmtname(buf)));
+                    //printf("%s\n", fmtname(buf));
+                    //printf("%d\n", strcmp(file, fmtname(buf)));
                 if(!strcmp(file, fmtname(buf)))
                     printf("%s\n", buf);
                 break;
             case T_DIR:
-                printf("%s\n", buf);
+                //printf("%s\n", buf);
                 find(buf, file);
                 break;
             }
