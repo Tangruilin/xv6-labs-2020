@@ -3,7 +3,7 @@
 #include "kernel/stat.h"
 #include "user/user.h"
 #include "kernel/fs.h"
-
+#define NULL (void*)0
 // 文件名提取
 char*
 fmtname(char *path) {
@@ -28,11 +28,11 @@ find(char *path, char* file) {
     struct dirent de;
     struct stat st;
     // 用来装文件夹名字
-    char **dirs;
+    // 还是避免使用二维指针吧
 
     if((fd = open(path, 0)) < 0) {
         fprintf(2, "find: cannot open %s\n", path);
-        return
+        return;
     }
     if(fstat(fd, &st) < 0) {
         fprintf(2, "find: cannot stat %s\n", path);
@@ -56,7 +56,45 @@ find(char *path, char* file) {
         p = buf + strlen(buf);
         *p++ = '/';
         // 读取文件夹里面每一个元素，进行解析
+        while (read(fd, &de, sizeof(de)) == sizeof(de)) {
+            if(de.inum == 0 || de.inum == 1)
+                continue;   //忽略.和..两个文件夹
+            // 这里将文件名丢到buf中， 十分巧妙的设计
+            memmove(p, de.name, DIRSIZ);
+            p[DIRSIZ] = 0;
+            if(stat(buf, &st) < 0) {
+                printf("find: cannot stat %s\n", buf);
+                continue;
+            }
+            // 这里开始出现与ls里面不一样的逻辑，要对文件夹里面的内容根据类型(文件夹还是文件进行分开的读取)
+            switch (st.type)
+            {
+            case T_FILE:
+                    printf("%s\n", fmtname(buf));
+                if(strcmp(file, fmtname(buf)) == 0)
+                    printf("%s\n", buf);
+                break;
+            case T_DIR:
+                find(buf, file);
+                break;
+            }
+        }
         break;
     }
-    
+}
+
+int
+main(int argc, char *argv[]) {
+    if(argc < 2 || argc > 3){
+        printf("paramer error...\n");
+        exit(1);
+    }
+    if(argc == 2){
+        find(".", argv[1]);
+        exit(0);
+    } else if (argc == 3) {
+        find(argv[1], argv[2]);
+        exit(0);
+    }
+    exit(0);
 }
