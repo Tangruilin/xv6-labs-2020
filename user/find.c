@@ -57,8 +57,11 @@ find(char *path, char* file) {
         *p++ = '/';
         // 读取文件夹里面每一个元素，进行解析
         while (read(fd, &de, sizeof(de)) == sizeof(de)) {
+            // 这里还是不能用这种，必须使用名字的比较
             if(de.inum == 0 || de.inum == 1)
                 continue;   //忽略.和..两个文件夹
+            if(!strcmp(de.name, ".") || !strcmp(de.name, ".."))
+                continue;
             // 这里将文件名丢到buf中， 十分巧妙的设计
             memmove(p, de.name, DIRSIZ);
             p[DIRSIZ] = 0;
@@ -71,12 +74,13 @@ find(char *path, char* file) {
             {
             case T_FILE:
                     printf("%s\n", fmtname(buf));
-                if(strcmp(file, fmtname(buf)) == 0)
+                    printf("%d\n", strcmp(file, fmtname(buf)));
+                if(!strcmp(file, fmtname(buf)))
                     printf("%s\n", buf);
                 break;
             case T_DIR:
-                printf("%s", buf);
-                //find(buf, file);
+                printf("%s\n", buf);
+                find(buf, file);
                 break;
             }
         }
