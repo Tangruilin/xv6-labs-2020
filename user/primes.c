@@ -46,6 +46,7 @@ main(int argc, char const *argv[])
             }
             // 发送完毕后关掉，这样read那边可以读到EOF
         close(fd[WRITE_FD]);
+        wait((int*)0);
         exit(0);    //主线程正常退出
         } else {
             // prime是筛子， temp是用来存数据的
