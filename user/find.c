@@ -75,7 +75,8 @@ find(char *path, char* file) {
                     printf("%s\n", buf);
                 break;
             case T_DIR:
-                find(buf, file);
+                printf("%s", buf);
+                //find(buf, file);
                 break;
             }
         }
