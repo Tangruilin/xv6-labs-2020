@@ -6,17 +6,41 @@
 #include "kernel/param.h"
 #include "user/user.h"
 //#include "kernel/fs.h"
-typedef int pid_t;
+#define STDIN_FILENO 0
+#define MAXLINE 1024
+// 所以说呢，实际上xargs的实现比较粗略，并没有对\n这些参数进行处理
+int main(int argc, char *argv[])
+{
+    char line[MAXLINE];
+    char* params[MAXARG];
+    int n, args_index = 0;
+    int i;
 
-void xarg(char *argv[]) {
-    // 创建子进程，程序在子进程里面实现，父进程挂起等待子进程的结束
-    pid_t pid;
-    if ((pid = fork()) < 0) {
-        printf("xargs: fork error...\n");
-        exit(1);
+    char* cmd = argv[1];
+    for (i = 1; i < argc; i++) params[args_index++] = argv[i];
+
+    while ((n = read(STDIN_FILENO, line, MAXLINE)) > 0)
+    {
+        if (fork() == 0) // child process
+        {
+            char *arg = (char*) malloc(sizeof(line));
+            int index = 0;
+            for (i = 0; i < n; i++)
+            {
+                if (line[i] == ' ' || line[i] == '\n')
+                {
+                    arg[index] = 0;
+                    params[args_index++] = arg;
+                    index = 0;
+                    arg = (char*) malloc(sizeof(line));
+                }
+                else arg[index++] = line[i];
+            }
+            arg[index] = 0;
+            params[args_index] = 0;
+            exec(cmd, params);
+        }
+        else wait((int*)0);
     }
-    if (pid > 0) {
-        wait((int*)0);
-        exit(0);
-    }
+    exit(0);
 }
