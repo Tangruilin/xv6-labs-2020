@@ -63,7 +63,7 @@ mycpu(void) {
   return c;
 }
 
-// Return the current struct proc *, or zero if none.
+// Return the current struct proc *, or zero if none. 得到当前的proc, 也就是当前正在cpu中的进程
 struct proc*
 myproc(void) {
   push_off();
@@ -692,4 +692,15 @@ procdump(void)
     printf("%d %s %s", p->pid, state, p->name);
     printf("\n");
   }
+}
+
+void trace(int n) {
+  struct proc *p = myproc();
+
+  if(p == initproc)
+    panic("init exiting");
+    // trace只需要做一件事情，修改掩码
+  p->mask = n;
+  //printf("%d\n", p->mask);
+  return;
 }

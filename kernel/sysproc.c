@@ -6,6 +6,21 @@
 #include "memlayout.h"
 #include "spinlock.h"
 #include "proc.h"
+//从用户空间检索系统调用 
+
+// 大多数的系统调用放在这个文件夹， 通过一个proc类型的指针来获取系统的信息
+// 自己要进行额外添加的系统调用
+// 所有的系统调用进行编译的时候应该是都会链接在这边?
+uint64
+sys_trace(void) {
+//获取对应的线程 
+  int n;
+  if(argint(0, &n) < 0)
+    return -1;
+  trace(n);
+    // 中间加一行，调用trace
+  return 0;
+}
 
 uint64
 sys_exit(void)

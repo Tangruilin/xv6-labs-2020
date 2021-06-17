@@ -104,6 +104,7 @@ extern uint64 sys_unlink(void);
 extern uint64 sys_wait(void);
 extern uint64 sys_write(void);
 extern uint64 sys_uptime(void);
+extern uint64 sys_trace(void);
 
 static uint64 (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
@@ -127,20 +128,57 @@ static uint64 (*syscalls[])(void) = {
 [SYS_link]    sys_link,
 [SYS_mkdir]   sys_mkdir,
 [SYS_close]   sys_close,
+//额外的增加内容 
+[SYS_trace]   sys_trace,
 };
+//新建一个系统调用名映射的表
+static char* _syscall[] = {
+  [SYS_fork]    "fork",
+  [SYS_exit]    "exit",
+  [SYS_wait]    "wait",
+  [SYS_pipe]    "pipe",
+  [SYS_read]    "read",
+  [SYS_kill]    "kill",
+  [SYS_exec]    "exec",
+  [SYS_fstat]   "fstat",
+  [SYS_chdir]   "chdir",
+  [SYS_dup]     "dup",
+  [SYS_getpid]  "getpid",
+  [SYS_sbrk]    "sbrk",
+  [SYS_sleep]   "sleep",
+  [SYS_uptime]  "uptime",
+  [SYS_open]    "open",
+  [SYS_write]   "write",
+  [SYS_mknod]   "mknod",
+  [SYS_unlink]  "unlink",
+  [SYS_link]    "link",
+  [SYS_mkdir]   "mkdir",
+  [SYS_close]   "close",
+  [SYS_trace]   "trace",
+};
+
 
 void
 syscall(void)
 {
   int num;
+  // 这里获取当前线程
   struct proc *p = myproc();
 
   num = p->trapframe->a7;
   if(num > 0 && num < NELEM(syscalls) && syscalls[num]) {
     p->trapframe->a0 = syscalls[num]();
+    // 下面要增加用户代码，打印现在的syscalls的输出，做一个对堆栈追踪的输出打印
+    // 添加测试代码
+    // 通过进程掩码，判断是否要进行追踪
+   // printf("%d\n", p->mask);
+    if (((p->mask >> num) & 1) == 1)
+      printf("syscall %s -> %d\n", _syscall[num], p->trapframe->a0);
   } else {
     printf("%d %s: unknown sys call %d\n",
             p->pid, p->name, num);
     p->trapframe->a0 = -1;
   }
 }
+//给自己的寄语：不要怀疑自己的智商，其实看一会基本都能做出来，花了不少时间来理解整个操作系统的运行逻辑可能还不如
+//跟着做一下的效果好，按照注册步骤过来，一个小时以内完全可以把整个trace调试好的，不过也学到了不少东西  
