@@ -267,7 +267,7 @@ fork(void)
     return -1;
   }
 
-  // Copy user memory from parent to child.
+  // Copy user memory from parent to child. 将父进程的内存为子进程进行同样的分配
   if(uvmcopy(p->pagetable, np->pagetable, p->sz) < 0){
     freeproc(np);
     release(&np->lock);
@@ -276,7 +276,8 @@ fork(void)
   np->sz = p->sz;
 
   np->parent = p;
-
+//子进程的追踪掩码与父进程相同, 这样就可以对fork进行进程掩码的追踪了
+  np->mask = p->mask;
   // copy saved user registers.
   *(np->trapframe) = *(p->trapframe);
 
