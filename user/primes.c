@@ -66,7 +66,7 @@ main(int argc, char const *argv[])
              //   printf("%d ", num[i]);
             //printf("\n");
             if (prime != 0)
-                printf("prime: %d\n", prime);
+                printf("prime %d\n", prime);
             close(fd[READ_FD]);
         }
     }
