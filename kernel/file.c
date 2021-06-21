@@ -94,6 +94,8 @@ filestat(struct file *f, uint64 addr)
     ilock(f->ip);
     stati(f->ip, &st);
     iunlock(f->ip);
+    // 使用copyout将内核数据复制到用户空间
+    // p->pagetable是用户空间所在的内存页, addr表示的是在这个页面中的偏移
     if(copyout(p->pagetable, addr, (char *)&st, sizeof(st)) < 0)
       return -1;
     return 0;

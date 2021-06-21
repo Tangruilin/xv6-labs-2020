@@ -18,6 +18,7 @@ struct run {
   struct run *next;
 };
 
+//这个结构体应该是一个用来表示可分配内存页数目的链表，每次进行内存分配的时候都从链表中取出一个页进行分配 
 struct {
   struct spinlock lock;
   struct run *freelist;
@@ -46,8 +47,9 @@ freerange(void *pa_start, void *pa_end)
 void
 kfree(void *pa)
 {
+  // 这里的run结构体应该是用来表示未被释放的内存
   struct run *r;
-
+//探寻内存的分页机制，内存分页是以4096个字节为单位进行分页的
   if(((uint64)pa % PGSIZE) != 0 || (char*)pa < end || (uint64)pa >= PHYSTOP)
     panic("kfree");
 
@@ -71,12 +73,25 @@ kalloc(void)
   struct run *r;
 
   acquire(&kmem.lock);
+  // 将freelist的头拿出来进行分配
   r = kmem.freelist;
   if(r)
     kmem.freelist = r->next;
   release(&kmem.lock);
 
   if(r)
+  // 分配一个内存页
     memset((char*)r, 5, PGSIZE); // fill with junk
   return (void*)r;
+}
+//下面的函数会搜集内存中剩余的部分, 并且返回
+int
+kcollect(void) {
+  struct run *r;
+  int pages = 0;
+  acquire(&kmem.lock);
+  r = kmem.freelist;
+  for (; r != (void*)0; r = r->next) pages++;
+  release(&kmem.lock);
+  return pages*PGSIZE;
 }

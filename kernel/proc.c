@@ -5,9 +5,12 @@
 #include "spinlock.h"
 #include "proc.h"
 #include "defs.h"
+//增加头文件
+#include "sysinfo.h" 
 
 struct cpu cpus[NCPU];
 
+//这里有一个全局线程数组,用来对所有的线程进行管理, 在procGet函数中, 对这个线程库进行扫描就可以得到想要的数据了 
 struct proc proc[NPROC];
 
 struct proc *initproc;
@@ -704,4 +707,24 @@ void trace(int n) {
   p->mask = n;
   //printf("%d\n", p->mask);
   return;
+}
+
+int 
+procGet(void) {
+  int procs = 0;
+  for (int i = 0; i < NPROC; i++)
+    if (proc[i].state != UNUSED)
+      procs++;
+  return procs; 
+}
+
+int
+sysinfo(uint64 addr) {
+  struct proc *p = myproc();
+  struct sysinfo info;
+  info.freemem = kcollect();
+  info.nproc = procGet();
+  if (copyout(p->pagetable, addr, (char *)&info, sizeof(info)) < 0)
+    return -1;
+  return 0;
 }

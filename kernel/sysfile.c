@@ -23,7 +23,7 @@ argfd(int n, int *pfd, struct file **pf)
 {
   int fd;
   struct file *f;
-
+  // 根据n来选定文件位置, 这里的argint是用来传递参数的,也就是说n其实就是指fstat系统调用的第一个参数
   if(argint(n, &fd) < 0)
     return -1;
   if(fd < 0 || fd >= NOFILE || (f=myproc()->ofile[fd]) == 0)
@@ -110,6 +110,7 @@ sys_fstat(void)
   struct file *f;
   uint64 st; // user pointer to struct stat
 
+//argfd: 使用一个文件描述符来描述传入的文件f, 
   if(argfd(0, 0, &f) < 0 || argaddr(1, &st) < 0)
     return -1;
   return filestat(f, st);

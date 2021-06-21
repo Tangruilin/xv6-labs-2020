@@ -22,3 +22,4 @@
 #define SYS_close  21
 // 为trace新增一个系统调用号, 到这里就把系统调用注册完成了
 #define SYS_trace  22
+#define SYS_sysinfo 23

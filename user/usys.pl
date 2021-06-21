@@ -41,3 +41,4 @@ entry("sleep");
 entry("uptime");
 #增加用户空间存根
 entry("trace");
+entry("sysinfo");

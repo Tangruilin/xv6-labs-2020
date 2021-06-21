@@ -6,7 +6,19 @@
 #include "memlayout.h"
 #include "spinlock.h"
 #include "proc.h"
+//增加头文件
+#include "sysinfo.h" 
 //从用户空间检索系统调用 
+//增加info系统调用
+uint64
+sys_sysinfo(void) {
+  // 定义一个结构体用来接收参数
+  uint64 sysinfo_addr;
+  if (argaddr(0, &sysinfo_addr) < 0)
+    return -1;
+  return sysinfo(sysinfo_addr);
+} 
+
 
 // 大多数的系统调用放在这个文件夹， 通过一个proc类型的指针来获取系统的信息
 // 自己要进行额外添加的系统调用

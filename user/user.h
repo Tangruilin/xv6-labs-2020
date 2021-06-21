@@ -1,6 +1,7 @@
 struct stat;
 struct rtcdate;
-
+//增加sysinfo 的调用 
+struct sysinfo;
 // system calls
 int fork(void);
 int exit(int) __attribute__((noreturn));
@@ -25,7 +26,7 @@ int sleep(int);
 int uptime(void);
 //新增系统调用
 int trace(uint32); 
-
+int sysinfo(struct sysinfo*);
 // ulib.c
 int stat(const char*, struct stat*);
 char* strcpy(char*, const char*);

@@ -4,6 +4,7 @@
         "stat.h": "c",
         "types.h": "c",
         "param.h": "c",
-        "proc.h": "c"
+        "proc.h": "c",
+        "sysinfo.h": "c"
     }
 }

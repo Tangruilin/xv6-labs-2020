@@ -105,6 +105,7 @@ extern uint64 sys_wait(void);
 extern uint64 sys_write(void);
 extern uint64 sys_uptime(void);
 extern uint64 sys_trace(void);
+extern uint64 sys_sysinfo(void);
 
 static uint64 (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
@@ -130,6 +131,7 @@ static uint64 (*syscalls[])(void) = {
 [SYS_close]   sys_close,
 //额外的增加内容 
 [SYS_trace]   sys_trace,
+[SYS_sysinfo] sys_sysinfo,
 };
 //新建一个系统调用名映射的表
 static char* _syscall[] = {
@@ -155,6 +157,7 @@ static char* _syscall[] = {
   [SYS_mkdir]   "mkdir",
   [SYS_close]   "close",
   [SYS_trace]   "trace",
+  [SYS_sysinfo] "sysinfo",
 };
 
 
@@ -173,7 +176,7 @@ syscall(void)
     // 通过进程掩码，判断是否要进行追踪
    // printf("%d\n", p->mask);
     if (((p->mask >> num) & 1) == 1)
-      printf("syscall %s -> %d\n", _syscall[num], p->trapframe->a0);
+      printf("%d: syscall %s -> %d\n", p->pid,_syscall[num], p->trapframe->a0);
   } else {
     printf("%d %s: unknown sys call %d\n",
             p->pid, p->name, num);
