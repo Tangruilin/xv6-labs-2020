@@ -36,7 +36,7 @@ main(int argc, char const *argv[])
         fprintf(2, "read error...\n");
         exit(1);
         }
-        printf("%d:received %s\n", getpid(), buf);
+        printf("%d: received %s\n", getpid(), buf);
         close(father_fd[0]);
         char *send = "pong";
         if (write(child_fd[1], send, sizeof(send)) != sizeof(send)) {
